@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ESNext",
+    "lib": ["ESNext"],
+    "moduleResolution": "node",
+    "rootDir": "./src",
+    "outDir": "./api",
+    "incremental": true,
+    "declaration": true,
+    "declarationMap": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "sourceMap": true
+  },
+  "include": [
+    "src"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "schedule-uet-functions",
+  "version": "0.0.0",
+  "main": "index.js",
+  "author": "Ngo Quang Duong",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "tsc --build tsconfig.json"
+  },
+  "dependencies": {
+    "@vercel/node": "^1.9.0"
+  }
+}
