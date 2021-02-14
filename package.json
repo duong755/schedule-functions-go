@@ -6,9 +6,22 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "tsc --build tsconfig.json"
+    "build": "tsc --build tsconfig.json",
+    "lint": "eslint",
+    "format": "prettier --write ./src"
   },
   "dependencies": {
-    "@vercel/node": "^1.9.0"
+    "@vercel/node": "^1.9.0",
+    "mongoose": "^5.11.16"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.10.3",
+    "@typescript-eslint/eslint-plugin": "^4.15.0",
+    "@typescript-eslint/parser": "^4.15.0",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1"
   }
 }
