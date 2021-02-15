@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES5",
     "module": "ESNext",
-    "lib": ["ESNext"],
+    "lib": [
+      "ESNext"
+    ],
     "moduleResolution": "node",
     "rootDir": "./src",
     "outDir": "./api",
@@ -13,9 +15,15 @@
     "alwaysStrict": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "skipLibCheck": true
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "api",
+    ".vercel"
   ]
 }

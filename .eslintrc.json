@@ -14,14 +14,28 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2021,
-    "sourceType": "module"
+    "sourceType": "module",
+    "tsconfigRootDir": "./"
   },
   "plugins": [
     "@typescript-eslint",
     "prettier"
   ],
   "rules": {
-    "indent": [
+    "no-var": "error",
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": false
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/indent": [
       "error",
       2,
       {
@@ -31,21 +45,15 @@
         "SwitchCase": 1
       }
     ],
-    "no-var": "error",
-    "no-unused-vars": "error",
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
-    "quotes": [
+    "@typescript-eslint/quotes": [
       "error",
       "double"
     ],
-    "semi": [
+    "@typescript-eslint/semi": [
       "error",
       "always"
     ],
-    "comma-dangle": [
+    "@typescript-eslint/comma-dangle": [
       "error",
       {
         "arrays": "only-multiline",
@@ -53,13 +61,6 @@
         "imports": "only-multiline",
         "exports": "only-multiline",
         "functions": "only-multiline"
-      }
-    ],
-    "prefer-const": [
-      "error",
-      {
-        "destructuring": "any",
-        "ignoreReadBeforeAssign": false
       }
     ],
     "prettier/prettier": [
@@ -78,6 +79,8 @@
     "import/no-unresolved": "error"
   },
   "ignorePatterns": [
-    "api/"
+    "api/",
+    "node_modules/",
+    ".vercel/"
   ]
 }

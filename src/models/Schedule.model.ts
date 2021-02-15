@@ -35,4 +35,4 @@ const ScheduleSchema = new Schema<ISchedule>(
   }
 );
 
-export const ScheduleModel = model<Document<ISchedule>>("schedule", ScheduleSchema);
+export const ScheduleModel = model<Document<ISchedule>>("schedule", ScheduleSchema, "Schedule");
