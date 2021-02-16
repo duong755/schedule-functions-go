@@ -53,7 +53,7 @@
       "error",
       "always"
     ],
-    "@typescript-eslint/comma-dangle": [
+    "comma-dangle": [
       "error",
       {
         "arrays": "only-multiline",
