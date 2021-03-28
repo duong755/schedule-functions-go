@@ -105,7 +105,3 @@ dist
 
 # Vercel
 .vercel
-
-# Typescript
-api
-tsconfig.tsbuildinfo
