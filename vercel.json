@@ -12,9 +12,9 @@
     }
   },
   "redirects": [
-    { "source": "/schedules", "destination": "api/schedules" },
+    { "source": "/schedules", "destination": "api/v1/schedules" },
     { "source": "/api/schedules", "destination": "/api/v1/schedules" },
-    { "source": "/classmembers", "destination": "/api/classmembers" },
+    { "source": "/classmembers", "destination": "/api/v1/classmembers" },
     { "source": "/api/classmembers", "destination": "/api/v1/classmembers" }
   ]
 }
