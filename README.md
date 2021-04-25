@@ -8,7 +8,7 @@
     "method": "*",
     "studentId": {
         "required": true,
-        "pattern": "^\d{8}$"
+        "pattern": "^\\d{8}$"
     },
     "response": [
         {
@@ -36,7 +36,8 @@
                     "note": "string"
                 }
             ]
-        },
+        }
+    ]
 }
 ```
 
