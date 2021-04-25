@@ -4,7 +4,7 @@
 
 ```json
 {
-    "endPoint": "/api/v1/schedule?studentId={studentId}",
+    "endPoint": "/api/v1/schedules?studentId={studentId}",
     "method": "*",
     "studentId": {
         "required": true,
