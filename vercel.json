@@ -1,20 +1,20 @@
 {
-  "github": {
-    "silent": true
-  },
-  "trailingSlash": false,
-  "functions": {
-    "api/v1/schedules.go": {
-      "memory": 256
+    "github": {
+        "silent": true
     },
-    "api/v1/classmembers.go": {
-      "memory": 256
-    }
-  },
-  "redirects": [
-    { "source": "/schedules", "destination": "api/v1/schedules" },
-    { "source": "/api/schedules", "destination": "/api/v1/schedules" },
-    { "source": "/classmembers", "destination": "/api/v1/classmembers" },
-    { "source": "/api/classmembers", "destination": "/api/v1/classmembers" }
-  ]
+    "trailingSlash": false,
+    "functions": {
+        "api/v1/schedules.go": {
+        "memory": 256
+        },
+        "api/v1/classmembers.go": {
+        "memory": 256
+        }
+    },
+    "redirects": [
+        { "source": "/schedules", "destination": "api/v1/schedules" },
+        { "source": "/api/schedules", "destination": "/api/v1/schedules" },
+        { "source": "/classmembers", "destination": "/api/v1/classmembers" },
+        { "source": "/api/classmembers", "destination": "/api/v1/classmembers" }
+    ]
 }
