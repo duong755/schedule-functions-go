@@ -25,28 +25,30 @@ func SchedulesHandler(responseWriter http.ResponseWriter, request *http.Request)
 		responseWriter.Header().Add("Content-Type", "application/json")
 		responseWriter.WriteHeader(400)
 		errorResponse := &utils.ErrorResponse{Message: "Invalid student id"}
-		jsonResult, _ := json.Marshal(errorResponse)
-		fmt.Println(string(jsonResult))
+		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
 		fmt.Fprint(responseWriter, string(jsonResult))
 		return
 	}
 
 	dbcontext, client := database.Client()
 
-	database := client.Database("uet")
-	scheduleCollection := database.Collection("schedule")
+	db := client.Database("uet")
+	scheduleCollection := db.Collection("schedule")
 
 	matchStage := primitive.D{
 		{Key: "$match", Value: primitive.D{
 			{Key: "studentId", Value: studentId},
 		}},
 	}
-	// lookupStage := primitive.D{
-		// {Key: "$lookup", Value: primitive.D{
-			// {Key: "", Value: ""},
-		// }},
-	// }
-	scheduleCursor, _ := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage})
+	lookupStage := primitive.D{
+		{Key: "$lookup", Value: primitive.D{
+			{Key: "from", Value: "class"},
+			{Key: "localField", Value: "classId"},
+			{Key: "foreignField", Value: "classId"},
+			{Key: "as", Value: "classes"},
+		}},
+	}
+	scheduleCursor, _ := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage,lookupStage})
 
 	scheduleRecords := make([]models.Schedule, 0)
 	scheduleCursor.All(context.TODO(), &scheduleRecords)
