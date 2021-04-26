@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,11 +16,13 @@ import (
 
 func SchedulesHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	studentId := request.URL.Query().Get("studentId")
+	studentId = strings.Trim(studentId, " ")
+	studentId = strings.ToUpper(studentId)
 	regexpStudentId := regexp.MustCompile(`^\d{8}$`)
 
 	if !regexpStudentId.MatchString(studentId) {
 		responseWriter.Header().Add("Content-Type", "application/json")
-		responseWriter.WriteHeader(400)
+		responseWriter.WriteHeader(http.StatusBadRequest)
 		errorResponse := &utils.ErrorResponse{Message: "Invalid student id"}
 		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
 		fmt.Fprint(responseWriter, string(jsonResult))
@@ -151,18 +154,18 @@ func SchedulesHandler(responseWriter http.ResponseWriter, request *http.Request)
 
 	if aggregateErr != nil {
 		responseWriter.Header().Add("Content-Type", "application/json")
-		responseWriter.WriteHeader(500)
+		responseWriter.WriteHeader(http.StatusInternalServerError)
 		errorResponse := &utils.ErrorResponse{Message: "Error occurred while getting schedules"}
 		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
 		fmt.Fprint(responseWriter, string(jsonResult))
 	}
 
-	scheduleRecords := make([]modelsV2.Schedule, 0)
+	scheduleRecords := []modelsV2.Schedule{}
 	scheduleCursor.All(dbcontext, &scheduleRecords)
 
 	if len(scheduleRecords) == 0 {
 		responseWriter.Header().Add("Content-Type", "application/json")
-		responseWriter.WriteHeader(404)
+		responseWriter.WriteHeader(http.StatusNotFound)
 		errorResponse := &utils.ErrorResponse{Message: "StudentId does not exist"}
 		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
 		fmt.Fprint(responseWriter, string(jsonResult))
@@ -170,7 +173,7 @@ func SchedulesHandler(responseWriter http.ResponseWriter, request *http.Request)
 	}
 
 	responseWriter.Header().Add("Content-Type", "application/json")
-	responseWriter.WriteHeader(200)
+	responseWriter.WriteHeader(http.StatusOK)
 	jsonResult, _ := json.MarshalIndent(scheduleRecords[0], "", "  ")
 	fmt.Fprint(responseWriter, string(jsonResult))
 }

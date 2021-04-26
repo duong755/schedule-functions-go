@@ -1,10 +1,10 @@
 package v1
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -17,6 +17,8 @@ import (
 // ClassMembersHandler returns the function name
 func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	classId := request.URL.Query().Get("classId")
+	classId = strings.Trim(classId, " ")
+	classId = strings.ToUpper(classId)
 
 	dbcontext, client := database.Client()
 	db := client.Database("uet")
@@ -31,7 +33,7 @@ func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Reque
 
 	if errFindClass := classCollection.FindOne(dbcontext, filterClass).Decode(&class); errFindClass != nil {
 		responseWriter.Header().Add("Content-Type", "application/json")
-		responseWriter.WriteHeader(404)
+		responseWriter.WriteHeader(http.StatusBadRequest)
 		errorResponse := &utils.ErrorResponse{Message: "ClassId does not exist"}
 		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
 		fmt.Fprint(responseWriter, string(jsonResult))
@@ -53,12 +55,12 @@ func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Reque
 	}
 	scheduleCursor, _ := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage, groupStage})
 
-	scheduleRecords := make([]modelsV1.Schedule, 0)
-	scheduleCursor.All(context.TODO(), &scheduleRecords)
+	scheduleRecords := []modelsV1.Schedule{}
+	scheduleCursor.All(dbcontext, &scheduleRecords)
 
 	class.Students = scheduleRecords
 	responseWriter.Header().Add("Content-Type", "application/json")
-	responseWriter.WriteHeader(200)
+	responseWriter.WriteHeader(http.StatusOK)
 	jsonResult, _ := json.MarshalIndent(class, "", "  ")
 	fmt.Fprint(responseWriter, string(jsonResult))
 }

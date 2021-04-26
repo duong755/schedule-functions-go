@@ -1,10 +1,10 @@
 package v2
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -16,6 +16,8 @@ import (
 
 func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	classId := request.URL.Query().Get("classId")
+	classId = strings.Trim(classId, " ")
+	classId = strings.ToUpper(classId)
 
 	dbcontext, client := database.Client()
 	db := client.Database("uet")
@@ -30,7 +32,7 @@ func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Reque
 
 	if errFindClass := classCollection.FindOne(dbcontext, filterClass).Decode(&class); errFindClass != nil {
 		responseWriter.Header().Add("Content-Type", "application/json")
-		responseWriter.WriteHeader(404)
+		responseWriter.WriteHeader(http.StatusBadRequest)
 		errorResponse := &utils.ErrorResponse{Message: "ClassId does not exist"}
 		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
 		fmt.Fprint(responseWriter, string(jsonResult))
@@ -52,14 +54,23 @@ func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Reque
 			{Key: "studentCourse", Value: primitive.D{{Key: "$first", Value: "$studentCourse"}}},
 		}},
 	}
-	studentCursor, _ := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage, groupStage})
+	studentCursor, studentAggregateErr := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage, groupStage})
 
-	studentRecords := make([]modelsV2.Student, 0)
-	studentCursor.All(context.TODO(), &studentRecords)
+	if studentAggregateErr != nil {
+		responseWriter.Header().Add("Content-Type", "application/json")
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+		errorResponse := &utils.ErrorResponse{Message: "Error occured while getting class members"}
+		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
+		fmt.Fprint(responseWriter, string(jsonResult))
+		return
+	}
+
+	studentRecords := []modelsV2.Student{}
+	studentCursor.All(dbcontext, &studentRecords)
 
 	class.Students = studentRecords
 	responseWriter.Header().Add("Content-Type", "application/json")
-	responseWriter.WriteHeader(200)
+	responseWriter.WriteHeader(http.StatusOK)
 	jsonResult, _ := json.MarshalIndent(class, "", "  ")
 	fmt.Fprint(responseWriter, string(jsonResult))
 }

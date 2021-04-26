@@ -1,11 +1,11 @@
 package v1
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,12 +18,13 @@ import (
 // SchedulesHandler returns some records from Schedule collection
 func SchedulesHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	studentId := request.URL.Query().Get("studentId")
-
+	studentId = strings.Trim(studentId, " ")
+	studentId = strings.ToUpper(studentId)
 	regexpStudentId := regexp.MustCompile(`^\d{8}$`)
 
 	if !regexpStudentId.MatchString(studentId) {
 		responseWriter.Header().Add("Content-Type", "application/json")
-		responseWriter.WriteHeader(400)
+		responseWriter.WriteHeader(http.StatusBadRequest)
 		errorResponse := &utils.ErrorResponse{Message: "Invalid student id"}
 		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
 		fmt.Fprint(responseWriter, string(jsonResult))
@@ -50,11 +51,11 @@ func SchedulesHandler(responseWriter http.ResponseWriter, request *http.Request)
 	}
 	scheduleCursor, _ := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage, lookupStage})
 
-	scheduleRecords := make([]modelsV1.Schedule, 0)
-	scheduleCursor.All(context.TODO(), &scheduleRecords)
+	scheduleRecords := []modelsV1.Schedule{}
+	scheduleCursor.All(dbcontext, &scheduleRecords)
 
 	responseWriter.Header().Add("Content-Type", "application/json")
-	responseWriter.WriteHeader(200)
+	responseWriter.WriteHeader(http.StatusOK)
 	jsonResult, _ := json.MarshalIndent(scheduleRecords, "", "  ")
 	fmt.Fprint(responseWriter, string(jsonResult))
 }
