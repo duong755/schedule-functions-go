@@ -1,4 +1,4 @@
-package models
+package modelsV1
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -17,5 +17,5 @@ type Class struct {
 	Periods          []int8             `bson:"periods" json:"periods"`
 	Place            string             `bson:"place" json:"place"`
 	Note             string             `bson:"note" json:"note"` // "CL" (chung lớp), số (nhóm)
-	Students         []Schedule           `bson:"students" json:"students,omitempty"`
+	Students         []Schedule         `bson:"students" json:"students,omitempty"`
 }

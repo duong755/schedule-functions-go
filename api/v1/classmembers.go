@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"schedule.functions/database"
-	"schedule.functions/models"
+	modelsV1 "schedule.functions/models/v1"
 	"schedule.functions/utils"
 )
 
@@ -27,7 +27,7 @@ func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Reque
 		{Key: "classId", Value: classId},
 	}
 
-	class := models.Class{}
+	class := modelsV1.Class{}
 
 	if errFindClass := classCollection.FindOne(dbcontext, filterClass).Decode(&class); errFindClass != nil {
 		responseWriter.Header().Add("Content-Type", "application/json")
@@ -46,14 +46,14 @@ func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Reque
 	groupStage := primitive.D{
 		{Key: "$group", Value: primitive.D{
 			{Key: "_id", Value: "$_id"},
-			{Key: "studentId", Value: primitive.D{{ Key: "$first", Value: "$studentId" }}},
-			{Key: "studentName", Value: primitive.D{{ Key: "$first", Value: "$studentName" }}},
-			{Key: "studentNote", Value: primitive.D{{ Key: "$first", Value: "$studentNote" }}},
+			{Key: "studentId", Value: primitive.D{{Key: "$first", Value: "$studentId"}}},
+			{Key: "studentName", Value: primitive.D{{Key: "$first", Value: "$studentName"}}},
+			{Key: "studentNote", Value: primitive.D{{Key: "$first", Value: "$studentNote"}}},
 		}},
 	}
 	scheduleCursor, _ := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage, groupStage})
 
-	scheduleRecords := make([]models.Schedule, 0)
+	scheduleRecords := make([]modelsV1.Schedule, 0)
 	scheduleCursor.All(context.TODO(), &scheduleRecords)
 
 	class.Students = scheduleRecords

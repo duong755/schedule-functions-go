@@ -5,16 +5,22 @@
     "trailingSlash": false,
     "functions": {
         "api/v1/schedules.go": {
-        "memory": 256
+            "memory": 256
         },
         "api/v1/classmembers.go": {
-        "memory": 256
+            "memory": 256
+        },
+        "api/v2/schedules.go": {
+            "memory": 256
+        },
+        "api/v2/classmembers.go": {
+            "memory": 256
         }
     },
     "redirects": [
-        { "source": "/schedules", "destination": "api/v1/schedules" },
-        { "source": "/api/schedules", "destination": "/api/v1/schedules" },
-        { "source": "/classmembers", "destination": "/api/v1/classmembers" },
-        { "source": "/api/classmembers", "destination": "/api/v1/classmembers" }
+        { "source": "/schedules", "destination": "api/v2/schedules" },
+        { "source": "/api/schedules", "destination": "/api/v2/schedules" },
+        { "source": "/classmembers", "destination": "/api/v2/classmembers" },
+        { "source": "/api/classmembers", "destination": "/api/v2/classmembers" }
     ]
 }

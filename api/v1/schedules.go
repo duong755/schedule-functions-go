@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"schedule.functions/database"
-	"schedule.functions/models"
+	modelsV1 "schedule.functions/models/v1"
 	"schedule.functions/utils"
 )
 
@@ -48,9 +48,9 @@ func SchedulesHandler(responseWriter http.ResponseWriter, request *http.Request)
 			{Key: "as", Value: "classes"},
 		}},
 	}
-	scheduleCursor, _ := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage,lookupStage})
+	scheduleCursor, _ := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage, lookupStage})
 
-	scheduleRecords := make([]models.Schedule, 0)
+	scheduleRecords := make([]modelsV1.Schedule, 0)
 	scheduleCursor.All(context.TODO(), &scheduleRecords)
 
 	responseWriter.Header().Add("Content-Type", "application/json")
