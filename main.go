@@ -19,7 +19,7 @@ func main() {
 
 	apiV2Router := rootRouter.PathPrefix("/api/v2").Subrouter()
 	apiV2Router.HandleFunc("/classmembers", v2.ClassMembersHandler).Methods(http.MethodGet)
-	apiV2Router.HandleFunc("/schedules", v1.SchedulesHandler).Methods(http.MethodGet)
+	apiV2Router.HandleFunc("/schedules", v2.SchedulesHandler).Methods(http.MethodGet)
 
 	http.ListenAndServe(":5000", rootRouter)
 }
