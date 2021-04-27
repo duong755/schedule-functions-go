@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strings"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"schedule.functions/database"
@@ -24,27 +23,81 @@ func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Reque
 	classCollection := db.Collection("class")
 	scheduleCollection := db.Collection("schedule")
 
-	filterClass := bson.D{
-		{Key: "classId", Value: classId},
+	classes := []modelsV2.Class{}
+	classMatchStage := primitive.D{
+		{Key: "$match", Value: primitive.D{
+			{Key: "classId", Value: classId},
+		}},
+	}
+	classGroupStage := primitive.D{
+		{Key: "$group", Value: primitive.D{
+			{Key: "_id", Value: "$classId"},
+			{Key: "id", Value: primitive.D{
+				{Key: "$first", Value: "$_id"},
+			}},
+			{Key: "classId", Value: primitive.D{
+				{Key: "$first", Value: "$classId"},
+			}},
+			{Key: "subjectId", Value: primitive.D{
+				{Key: "$first", Value: "$subjectId"},
+			}},
+			{Key: "subjectName", Value: primitive.D{
+				{Key: "$first", Value: "$subjectName"},
+			}},
+			{Key: "credit", Value: primitive.D{
+				{Key: "$first", Value: "$credit"},
+			}},
+			{Key: "groups", Value: primitive.D{
+				{Key: "$addToSet", Value: primitive.D{
+					{Key: "session", Value: "$session"},
+					{Key: "weekDay", Value: "$weekDay"},
+					{Key: "place", Value: "$place"},
+					{Key: "teacher", Value: "$teacher"},
+					{Key: "note", Value: "$note"},
+				}},
+			}},
+		}},
+	}
+	classProjectStage := primitive.D{
+		{Key: "$project", Value: primitive.D{
+			{Key: "_id", Value: "$id"},
+			{Key: "classId", Value: "$classId"},
+			{Key: "subjectId", Value: "$subjectId"},
+			{Key: "subjectName", Value: "$subjectName"},
+			{Key: "credit", Value: "$credit"},
+			{Key: "groups", Value: "$groups"},
+		}},
 	}
 
-	class := modelsV2.Class{}
+	classCursor, classAggregateErr := classCollection.Aggregate(dbcontext, mongo.Pipeline{classMatchStage, classGroupStage, classProjectStage})
 
-	if errFindClass := classCollection.FindOne(dbcontext, filterClass).Decode(&class); errFindClass != nil {
+	if classAggregateErr != nil {
 		responseWriter.Header().Add("Content-Type", "application/json")
-		responseWriter.WriteHeader(http.StatusBadRequest)
-		errorResponse := &utils.ErrorResponse{Message: "ClassId does not exist"}
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+		errorResponse := &utils.ErrorResponse{Message: "Error occured while finding class"}
 		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
 		fmt.Fprint(responseWriter, string(jsonResult))
 		return
 	}
 
-	matchStage := primitive.D{
+	classCursor.All(dbcontext, &classes)
+
+	if len(classes) == 0 {
+		responseWriter.Header().Add("Content-Type", "application/json")
+		responseWriter.WriteHeader(http.StatusNotFound)
+		errorResponse := &utils.ErrorResponse{Message: "Class does not exist"}
+		jsonResult, _ := json.MarshalIndent(errorResponse, "", "  ")
+		fmt.Fprint(responseWriter, string(jsonResult))
+		return
+	}
+	class := classes[0]
+
+	studentMatchStage := primitive.D{
 		{Key: "$match", Value: primitive.D{
 			{Key: "classId", Value: classId},
 		}},
 	}
-	groupStage := primitive.D{
+	studentGroupStage := primitive.D{
 		{Key: "$group", Value: primitive.D{
 			{Key: "_id", Value: "$_id"},
 			{Key: "studentId", Value: primitive.D{{Key: "$first", Value: "$studentId"}}},
@@ -55,7 +108,7 @@ func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Reque
 			{Key: "classNote", Value: primitive.D{{Key: "$first", Value: "$classNote"}}},
 		}},
 	}
-	studentCursor, studentAggregateErr := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage, groupStage})
+	studentCursor, studentAggregateErr := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{studentMatchStage, studentGroupStage})
 
 	if studentAggregateErr != nil {
 		responseWriter.Header().Add("Content-Type", "application/json")

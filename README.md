@@ -131,6 +131,15 @@
         "periods": "integer[]",
         "place": "string",
         "note": "string",
+        "groups": [
+            {
+                "session": "string",
+                "weekDay": "string",
+                "place": "string",
+                "teacher": "string",
+                "note": "string"
+            }
+        ],
         "students": [
             {
                 "_id": "ObjectId",
