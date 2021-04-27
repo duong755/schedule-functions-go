@@ -52,6 +52,7 @@ func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Reque
 			{Key: "studentNote", Value: primitive.D{{Key: "$first", Value: "$studentNote"}}},
 			{Key: "studentBirthday", Value: primitive.D{{Key: "$first", Value: "$studentBirthday"}}},
 			{Key: "studentCourse", Value: primitive.D{{Key: "$first", Value: "$studentCourse"}}},
+			{Key: "classNote", Value: primitive.D{{Key: "$first", Value: "$classNote"}}},
 		}},
 	}
 	studentCursor, studentAggregateErr := scheduleCollection.Aggregate(dbcontext, mongo.Pipeline{matchStage, groupStage})

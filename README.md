@@ -138,7 +138,8 @@
                 "studentName": "string",
                 "studentNote": "string",
                 "studentBirthday": "string",
-                "studentCourse": "string"
+                "studentCourse": "string",
+                "classNote": "string"
             }
         ]
     }

@@ -2,4 +2,4 @@ module schedule.functions
 
 go 1.16
 
-require go.mongodb.org/mongo-driver v1.5.0
+require go.mongodb.org/mongo-driver v1.5.1

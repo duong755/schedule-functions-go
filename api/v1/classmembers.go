@@ -14,7 +14,7 @@ import (
 	"schedule.functions/utils"
 )
 
-// ClassMembersHandler returns the function name
+// ClassMembersHandler returns class info and list of students in it
 func ClassMembersHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	classId := request.URL.Query().Get("classId")
 	classId = strings.Trim(classId, " ")

@@ -1,5 +1,3 @@
 package database
 
-import "os"
-
-var CONNECTION_STRING string = os.Getenv("DATABASE_URL_FOR_VIEWER")
+var CONNECTION_STRING string = "mongodb+srv://viewer:toikhongnhothoikhoabieu@scheduleuet-ap-southeas.bnj8q.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
